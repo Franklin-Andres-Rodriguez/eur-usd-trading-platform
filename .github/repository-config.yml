@@ -1,0 +1,36 @@
+# Repository Configuration Summary
+# Generated automatically by modern-github-setup.sh
+
+repository:
+  name: eur-usd-trading-platform
+  owner: Franklin-Andres-Rodriguez
+  visibility: public
+  
+features:
+  issues: true
+  projects: true  
+  wiki: true
+  discussions: true
+  actions: true
+  pages: true
+  
+security:
+  vulnerability_alerts: true
+  automated_security_fixes: true
+  secret_scanning: true
+  
+automation:
+  delete_branch_on_merge: true
+  auto_merge: true
+  squash_merge: true
+  
+protection:
+  repository_rulesets: true
+  required_status_checks: true
+  required_pull_request_reviews: true
+  
+collaboration:
+  good_first_issues: true
+  help_wanted_issues: true
+  comprehensive_labels: true
+  discussion_categories: configured

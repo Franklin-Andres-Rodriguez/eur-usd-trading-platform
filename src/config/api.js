@@ -1,9 +1,6 @@
-// API Configuration - Configuración de API para EUR/USD Trading Platform
-// IMPORTANTE: Este archivo debe estar en .gitignore para proteger las API keys
-
 const API_CONFIG = {
     alphaVantage: {
-        apiKey: 'DEMO_KEY', // ⚠️ CAMBIAR por tu API key real de Alpha Vantage
+        apiKey: '741EE1LJP869A2YP',
         baseUrl: 'https://www.alphavantage.co/query',
         active: true,
         requestsToday: 0,
@@ -11,14 +8,15 @@ const API_CONFIG = {
         quality: 'premium',
         lastRequest: null
     },
-    cors_proxy: 'https://api.allorigins.win/raw?url=', // CORS proxy para requests del browser
+    cors_proxy: 'https://api.allorigins.win/raw?url=',
     fallback: {
-        active: false,
-        quality: 'standard'
+        active: true,
+        quality: 'realistic'
     }
 };
 
-// Exportar configuración
+console.log('🔑 API Config loaded - Alpha Vantage key configured');
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = API_CONFIG;
 } else {
