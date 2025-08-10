@@ -1,0 +1,65 @@
+name: 🤖 Smart Auto-merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  auto-merge:
+    name: 🤖 Auto-merge Dependabot
+    runs-on: ubuntu-24.04-arm64
+    
+    if: |
+      github.actor == 'dependabot[bot]' &&
+      !github.event.pull_request.draft
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔍 Analyze PR
+        id: pr-analysis
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "pr-title=$PR_TITLE" >> $GITHUB_OUTPUT
+          
+          # Determinar si es seguro para auto-merge
+          if [[ "$PR_TITLE" =~ "patch" ]] || [[ "$PR_TITLE" =~ "deps:" ]]; then
+            echo "auto-merge-safe=true" >> $GITHUB_OUTPUT
+          else
+            echo "auto-merge-safe=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: ⏳ Wait for status checks
+        if: steps.pr-analysis.outputs.auto-merge-safe == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: '🧪 Quality Checks'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success
+      
+      - name: ✅ Auto-approve
+        if: steps.pr-analysis.outputs.auto-merge-safe == 'true'
+        run: |
+          gh pr review ${{ github.event.number }} --approve \
+            --body "🤖 Auto-approved: Safe dependency update passed all checks"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔄 Auto-merge
+        if: steps.pr-analysis.outputs.auto-merge-safe == 'true'
+        run: |
+          gh pr merge ${{ github.event.number }} \
+            --squash \
+            --delete-branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

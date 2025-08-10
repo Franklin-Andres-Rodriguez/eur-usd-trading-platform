@@ -1,0 +1,118 @@
+name: 🚀 Release Management
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: 🚀 Create Release
+    runs-on: ubuntu-24.04-arm64
+    
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: 🏗️ Build for release
+        run: |
+          npm run build
+          # Crear archivo ZIP con distribución
+          zip -r trading-platform-dist.zip dist/ index.html README.md LICENSE
+      
+      - name: 🏷️ Generate version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            # Auto-increment version basado en commits
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+            echo "last-tag=$LAST_TAG" >> $GITHUB_OUTPUT
+            
+            # Determinar tipo de bump
+            if git log $LAST_TAG..HEAD --oneline | grep -q "feat\|BREAKING"; then
+              BUMP="minor"
+            elif git log $LAST_TAG..HEAD --oneline | grep -q "fix"; then
+              BUMP="patch"
+            else
+              BUMP="patch"
+            fi
+            
+            NEW_VERSION=$(npx semver $LAST_TAG -i $BUMP)
+            echo "version=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 📝 Generate changelog
+        id: changelog
+        run: |
+          # Generar changelog automático
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD | head -20)
+          
+          cat > RELEASE_NOTES.md << EOF
+          ## 🚀 EUR/USD Trading Platform ${{ steps.version.outputs.version }}
+          
+          ### ✨ What's New
+          $CHANGELOG
+          
+          ### 📊 Platform Features
+          - 📈 Real-time EUR/USD data with Alpha Vantage integration
+          - ⏰ Multi-timeframe technical analysis (1H, 4H, Daily, Weekly)
+          - 🎯 Smart confluence scoring system
+          - 📅 Economic calendar with countdown timers
+          - 🚨 Live alert system for trading opportunities
+          - 📱 Responsive design for all devices
+          
+          ### 🔧 Technical Improvements
+          - Enhanced performance and stability
+          - Updated dependencies for security
+          - Improved code quality and documentation
+          
+          ### 📦 Download
+          - [Source Code (zip)](https://github.com/Franklin-Andres-Rodriguez/eur-usd-trading-platform/archive/${{ steps.version.outputs.version }}.zip)
+          - [Live Demo](https://franklin-andres-rodriguez.github.io/eur-usd-trading-platform)
+          
+          ---
+          **Full Changelog**: [Compare changes](https://github.com/Franklin-Andres-Rodriguez/eur-usd-trading-platform/compare/$(git describe --tags --abbrev=0 2>/dev/null || echo "initial")...${{ steps.version.outputs.version }})
+          EOF
+      
+      - name: 🏷️ Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.version.outputs.version }}
+          name: "EUR/USD Trading Platform ${{ steps.version.outputs.version }}"
+          bodyFile: "RELEASE_NOTES.md"
+          artifacts: "trading-platform-dist.zip"
+          generateReleaseNotes: false
+          makeLatest: true
+          token: ${{ secrets.GITHUB_TOKEN }}

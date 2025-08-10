@@ -1,0 +1,77 @@
+name: 🐛 Bug Report
+description: Report a bug in the EUR/USD Trading Platform
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: ["Franklin-Andres-Rodriguez"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Bug Report
+        Thanks for taking the time to fill out this bug report!
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-flight Checklist
+      options:
+        - label: I have searched existing issues
+          required: true
+        - label: I have tested with the latest version
+          required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Live Price Display
+        - Chart System
+        - Multi-Timeframe Analysis
+        - Economic Calendar
+        - Alert System
+        - API Integration
+        - UI/UX
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear description of what the bug is
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other
+    validations:
+      required: true

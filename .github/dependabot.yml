@@ -1,0 +1,62 @@
+version: 2
+updates:
+  # JavaScript dependencies con auto-triage 2024
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Bogota"
+    
+    # Auto-triage moderno (GitHub 2024)
+    open-pull-requests-limit: 10
+    
+    reviewers:
+      - "Franklin-Andres-Rodriguez"
+    
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    
+    labels:
+      - "dependencies"
+      - "automated"
+    
+    # Ignorar versiones alpha/beta
+    ignore:
+      - dependency-name: "*"
+        versions: ["< 1.0", "> 1.0.0-alpha", "< 1.0.0-beta"]
+    
+    # Groups para PRs más organizados
+    groups:
+      development-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "eslint*"
+          - "prettier"
+          - "@types/*"
+          - "typescript"
+      
+      build-dependencies:
+        patterns:
+          - "vite*"
+          - "rollup*"
+          - "webpack*"
+      
+      testing-dependencies:
+        patterns:
+          - "jest*"
+          - "cypress*"
+          - "playwright*"
+
+  # GitHub Actions updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    
+    labels:
+      - "ci/cd"
+      - "automated"
