@@ -67,3 +67,6 @@ config/live-trading.js
 trading-keys/
 
 docs/
+./prettierrc
+./eslintignore
+./eslintrc.js
