@@ -1,0 +1,65 @@
+{
+  "name": "eur-usd-trading-platform",
+  "version": "1.0.0",
+  "description": "🚀 Professional EUR/USD trading platform with real-time data and AI-powered analysis",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000",
+    "build": "npm run minify && npm run optimize",
+    "minify": "terser src/js/main.js -o dist/js/main.min.js",
+    "optimize": "imagemin src/images/* --out-dir=dist/images",
+    "test": "jest",
+    "lint": "eslint src/ --fix",
+    "format": "prettier --write .",
+    "serve": "npx serve .",
+    "deploy": "gh-pages -d .",
+    "validate": "html-validate index.html"
+  },
+  "keywords": [
+    "trading",
+    "forex",
+    "eur-usd",
+    "real-time-data",
+    "technical-analysis",
+    "fintech",
+    "alpha-vantage",
+    "ai-powered",
+    "javascript",
+    "chart-js"
+  ],
+  "author": {
+    "name": "Franklin Andres Rodriguez",
+    "email": "franklin@tradingplatform.com",
+    "url": "https://github.com/Franklin-Andres-Rodriguez"
+  },
+  "contributors": [
+    {
+      "name": "Claude (AI Assistant)",
+      "email": "ai-contributor@anthropic.com",
+      "url": "https://claude.ai"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Franklin-Andres-Rodriguez/eur-usd-trading-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Franklin-Andres-Rodriguez/eur-usd-trading-platform/issues"
+  },
+  "homepage": "https://franklin-andres-rodriguez.github.io/eur-usd-trading-platform",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "terser": "^5.19.0",
+    "imagemin": "^8.0.1",
+    "eslint": "^8.57.0",
+    "prettier": "^3.0.0",
+    "jest": "^29.6.0",
+    "gh-pages": "^6.0.0",
+    "html-validate": "^8.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
