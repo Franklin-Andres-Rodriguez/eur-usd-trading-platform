@@ -1,0 +1,136 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Top-level EditorConfig file
+root = true
+
+# All files default configuration
+[*]
+# Character encoding
+charset = utf-8
+
+# End of line style (Unix style for cross-platform compatibility)
+end_of_line = lf
+
+# Insert final newline (POSIX standard)
+insert_final_newline = true
+
+# Remove trailing whitespace (prevents merge conflicts)
+trim_trailing_whitespace = true
+
+# Default indentation (2 spaces for web development)
+indent_style = space
+indent_size = 2
+
+# Maximum line length (improves readability on all screen sizes)
+max_line_length = 100
+
+# JavaScript, TypeScript, and JSON files
+[*.{js,mjs,cjs,ts,tsx,json,jsonc}]
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# JSON files - no trailing commas allowed
+[*.json]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
+
+# Package.json - specific formatting for Node.js ecosystem
+[package.json]
+indent_style = space
+indent_size = 2
+
+# HTML files
+[*.{html,htm}]
+indent_style = space
+indent_size = 2
+max_line_length = 120
+
+# CSS, SCSS, and Less files
+[*.{css,scss,less,sass}]
+indent_style = space
+indent_size = 2
+max_line_length = 120
+
+# XML files (for potential configuration)
+[*.{xml,svg}]
+indent_style = space
+indent_size = 2
+
+# YAML files (for CI/CD and configuration)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.{md,markdown}]
+indent_style = space
+indent_size = 2
+# Allow trailing whitespace in markdown (sometimes needed for formatting)
+trim_trailing_whitespace = false
+max_line_length = 80
+
+# Configuration files
+[*.{toml,ini,cfg}]
+indent_style = space
+indent_size = 2
+
+# Shell scripts
+[*.{sh,bash,zsh}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+
+# Python files (for potential data analysis scripts)
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# Go files (if needed for backend services)
+[*.go]
+indent_style = tab
+indent_size = 4
+
+# Makefiles require tabs
+[{Makefile,makefile,*.mk}]
+indent_style = tab
+indent_size = 4
+
+# Docker files
+[{Dockerfile,Dockerfile.*,*.dockerfile}]
+indent_style = space
+indent_size = 2
+
+# Environment files
+[.env*]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+
+# License and legal files
+[{LICENSE,LICENCE,COPYING}*]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+
+# GitHub workflow files
+[.github/**/*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# VSCode settings
+[.vscode/*.json]
+indent_style = space
+indent_size = 2
+
+# Prettier configuration
+[.prettierrc*]
+indent_style = space
+indent_size = 2
+
+# ESLint configuration
+[.eslintrc*]
+indent_style = space
+indent_size = 2
