@@ -65,3 +65,5 @@ data/historical/
 data/backtest-results/
 config/live-trading.js
 trading-keys/
+
+docs/
