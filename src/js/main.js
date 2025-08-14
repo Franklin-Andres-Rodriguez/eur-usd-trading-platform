@@ -25,31 +25,31 @@ let mainChart = null;
 // Inicialización del sistema
 function initializeTradingSystem() {
     console.log('🚀 Initializing EUR/USD Trading Platform...');
-    
+
     // Verificar si API_CONFIG está disponible
     if (typeof API_CONFIG === 'undefined') {
         console.error('❌ API_CONFIG not found. Please check api.js file.');
         return;
     }
-    
+
     // Inicializar componentes
     initializeChart();
-    
+
     // Cargar datos iniciales
     fetchRealMarketData();
     updateCountdownTimer();
-    
+
     // Configurar intervals
     setInterval(fetchRealMarketData, 180000); // Cada 3 minutos
     setInterval(updateCountdownTimer, 1000); // Cada segundo
-    
+
     // Animaciones de carga
     setTimeout(() => {
         document.querySelectorAll('.panel').forEach((panel, index) => {
             panel.style.animation = `fadeIn 0.6s ease-in ${index * 0.1}s forwards`;
         });
     }, 100);
-    
+
     console.log('✅ Trading Platform Ready!');
 }
 
@@ -57,21 +57,21 @@ function initializeTradingSystem() {
 async function fetchRealMarketData() {
     try {
         console.log('🌍 Fetching real EUR/USD data...');
-        
+
         // Implementar llamada a API real aquí
         // Por ahora usar datos simulados
         const simulatedData = await simulateRealisticData();
-        
+
         tradingSystem.currentPrice = simulatedData.price;
         tradingSystem.priceChange = simulatedData.change;
         tradingSystem.lastUpdate = new Date();
-        
+
         updateLivePriceDisplay();
         updateChart();
         updateTimeframeData();
-        
+
         console.log('✅ Market data updated');
-        
+
     } catch (error) {
         console.error('❌ Error fetching market data:', error);
         await fallbackToSimulatedData();
@@ -82,7 +82,7 @@ async function fetchRealMarketData() {
 async function simulateRealisticData() {
     const marketTime = new Date();
     const hour = marketTime.getUTCHours();
-    
+
     // Volatilidad diferente según sesión de mercado
     let sessionMultiplier = 1;
     if (hour >= 8 && hour <= 16) {
@@ -92,15 +92,15 @@ async function simulateRealisticData() {
     } else {
         sessionMultiplier = 0.7; // Sesión Asia
     }
-    
+
     const basePrice = 1.1659;
     const maxMove = 0.0003 * sessionMultiplier;
     const randomMove = (Math.random() - 0.5) * 2 * maxMove;
     const trendBias = 0.00001;
-    
+
     const newPrice = (tradingSystem.currentPrice || basePrice) + randomMove + trendBias;
     const constrainedPrice = Math.max(1.1500, Math.min(1.1800, newPrice));
-    
+
     return {
         price: constrainedPrice,
         change: constrainedPrice - (tradingSystem.currentPrice || basePrice),
@@ -111,7 +111,7 @@ async function simulateRealisticData() {
 // Inicializar gráfico principal
 function initializeChart() {
     const ctx = document.getElementById('mainChart').getContext('2d');
-    
+
     mainChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -145,21 +145,21 @@ function initializeChart() {
 // Actualizar gráfico
 function updateChart() {
     if (!mainChart) return;
-    
+
     tradingSystem.priceHistory.push({
         time: new Date(),
         price: tradingSystem.currentPrice
     });
-    
+
     if (tradingSystem.priceHistory.length > 50) {
         tradingSystem.priceHistory.shift();
     }
-    
-    const labels = tradingSystem.priceHistory.map(point => 
+
+    const labels = tradingSystem.priceHistory.map(point =>
         point.time.toLocaleTimeString().substring(0, 5)
     );
     const prices = tradingSystem.priceHistory.map(point => point.price);
-    
+
     mainChart.data.labels = labels;
     mainChart.data.datasets[0].data = prices;
     mainChart.update('none');
@@ -169,17 +169,17 @@ function updateChart() {
 function updateLivePriceDisplay() {
     const priceElement = document.getElementById('livePrice');
     const changeElement = document.getElementById('priceChange');
-    
+
     priceElement.style.transform = 'scale(1.05)';
     setTimeout(() => {
         priceElement.style.transform = 'scale(1)';
     }, 200);
-    
+
     priceElement.textContent = tradingSystem.currentPrice.toFixed(4);
-    
+
     const changePercent = (tradingSystem.priceChange / tradingSystem.currentPrice * 100).toFixed(3);
     const changeText = `${tradingSystem.priceChange >= 0 ? '+' : ''}${tradingSystem.priceChange.toFixed(4)} (${changePercent}%)`;
-    
+
     changeElement.textContent = changeText;
     changeElement.className = `price-change ${tradingSystem.priceChange >= 0 ? 'positive' : 'negative'}`;
 }
@@ -192,11 +192,11 @@ function refreshAnalysis() {
     const originalText = button.innerHTML;
     button.innerHTML = '🔄 Refreshing...';
     button.disabled = true;
-    
+
     fetchRealMarketData().then(() => {
         button.innerHTML = originalText;
         button.disabled = false;
-        
+
         // Feedback visual
         document.querySelectorAll('.timeframe-card').forEach(card => {
             card.style.transform = 'scale(1.02)';
@@ -210,14 +210,14 @@ function refreshAnalysis() {
 // Cambiar timeframe del gráfico
 function changeTimeframe(tf) {
     tradingSystem.currentTimeframe = tf;
-    
+
     document.querySelectorAll('[id^="btn-"]').forEach(btn => {
         btn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
     });
-    
+
     const activeBtn = document.getElementById(`btn-${tf.toLowerCase()}`);
     activeBtn.style.background = 'linear-gradient(135deg, #16a34a, #15803d)';
-    
+
     console.log(`Switched to ${tf} timeframe`);
 }
 
@@ -232,12 +232,12 @@ function configureAlerts() {
 async function fallbackToSimulatedData() {
     console.log('🔄 Using simulated data as fallback...');
     const simulatedData = await simulateRealisticData();
-    
+
     tradingSystem.currentPrice = simulatedData.price;
     tradingSystem.priceChange = simulatedData.change;
     tradingSystem.lastUpdate = new Date();
     tradingSystem.dataSource = 'Simulated (Fallback)';
-    
+
     updateLivePriceDisplay();
     updateChart();
 }
@@ -246,13 +246,13 @@ async function fallbackToSimulatedData() {
 function updateTimeframeData() {
     Object.keys(timeframes).forEach(tf => {
         const frame = timeframes[tf];
-        
+
         // Simular cambios realistas en indicadores
         frame.rsi += (Math.random() - 0.5) * 3;
         frame.rsi = Math.max(0, Math.min(100, frame.rsi));
-        
+
         frame.macd += (Math.random() - 0.5) * 0.0008;
-        
+
         // Actualizar UI
         document.getElementById(`rsi-${tf}`).textContent = frame.rsi.toFixed(1);
         document.getElementById(`macd-${tf}`).textContent = frame.macd > 0 ? '+' + frame.macd.toFixed(4) : frame.macd.toFixed(4);
@@ -264,14 +264,43 @@ function updateCountdownTimer() {
     const now = new Date();
     const nextEvent = new Date(now.getTime() + 2 * 60 * 60 * 1000 + 45 * 60 * 1000 + 30 * 1000);
     const diff = nextEvent - now;
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    document.getElementById('nextEventTimer').textContent = 
+
+    document.getElementById('nextEventTimer').textContent =
         `ECB Decision: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+
+// Fucntion for toggling dark mode
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleSwitch = document.getElementById('theme-toggle');
+    const body = document.body;
+    const icon = document.querySelector('.switch .icon');
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        toggleSwitch.checked = true;
+        if (icon) icon.textContent = '🌙';
+    } else {
+        if (icon) icon.textContent = '☀️';
+    }
+
+    toggleSwitch.addEventListener('change', () => {
+        if (toggleSwitch.checked) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            if (icon) icon.textContent = '🌙';
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+            if (icon) icon.textContent = '☀️';
+        }
+    });
+});
+
 
 // ===== INICIALIZACIÓN =====
 
