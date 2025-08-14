@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "04:00"
+      timezone: "America/Bogota"
+    # 🆕 2024 Feature: Auto-triage rules for critical security
+    groups:
+      security-critical:
+        applies-to: security-updates
+        patterns: ["*"]
+        update-types: ["patch", "minor"]
+      development-tools:
+        applies-to: version-updates  
+        patterns: ["webpack*", "@webpack*", "eslint*"]
+        update-types: ["minor", "patch"]
+    # 🆕 2024 Feature: AI-powered vulnerability assessment
+    auto-merge:
+      enabled: true
+      strategy: "squash"
+      commit-message: "chore(security): automated dependency update"
+    # Financial platform specific ignores
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "live-server"  # Obsolete - should be removed
+        update-types: ["version-update:semver-patch"]
+    # Enhanced security for trading platform
+    reviewers:
+      - "franklin-andres-rodriguez"
+    assignees:  
+      - "franklin-andres-rodriguez"
+    labels:
+      - "dependencies"
+      - "security"
+      - "trading-platform"
+    milestone: "Security & Maintenance"

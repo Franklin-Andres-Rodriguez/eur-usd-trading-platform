@@ -1,0 +1,40 @@
+version: 1
+project_context:
+  name: "EUR/USD Trading Platform"
+  type: "financial_application"
+  domain: "forex_trading"
+  security_level: "enterprise"
+  
+ai_assistance:
+  enabled: true
+  financial_context: true
+  security_aware: true
+  node_version: "18.x"
+  
+languages:
+  javascript:
+    suggestions: true
+    security_scan: true
+    financial_precision: true
+    es_version: "2024"
+  html:
+    suggestions: true
+    accessibility: true
+  css:
+    suggestions: true
+    responsive_design: true
+    
+excluded_files:
+  - "*.env*"
+  - "docs/security/*"
+  - "*.key"
+  - "*.pem"
+  - "package-lock.json"
+  - "node_modules/*"
+  
+project_guidelines:
+  - "Maintain Node.js 18.x compatibility"
+  - "Follow enterprise security standards"
+  - "Prioritize financial data accuracy"
+  - "Implement responsive design patterns"
+  - "Use conventional commit messages"
