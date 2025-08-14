@@ -73,8 +73,8 @@ async function fetchRealMarketData() {
         console.log('✅ Market data updated');
 
     } catch (error) {
-        console.error('❌ Error fetching market data:', error);
-        await fallbackToSimulatedData();
+      console.error('❌ Failed to initialize platform:', error);
+      this.handleError(error);
     }
 }
 
@@ -205,7 +205,7 @@ function refreshAnalysis() {
             }, 200);
         });
     });
-}
+  }
 
 // Cambiar timeframe del gráfico
 function changeTimeframe(tf) {
@@ -272,35 +272,6 @@ function updateCountdownTimer() {
     document.getElementById('nextEventTimer').textContent =
         `ECB Decision: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
-
-// Fucntion for toggling dark mode
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleSwitch = document.getElementById('theme-toggle');
-    const body = document.body;
-    const icon = document.querySelector('.switch .icon');
-
-    // Load saved theme
-    if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
-        toggleSwitch.checked = true;
-        if (icon) icon.textContent = '🌙';
-    } else {
-        if (icon) icon.textContent = '☀️';
-    }
-
-    toggleSwitch.addEventListener('change', () => {
-        if (toggleSwitch.checked) {
-            body.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark');
-            if (icon) icon.textContent = '🌙';
-        } else {
-            body.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light');
-            if (icon) icon.textContent = '☀️';
-        }
-    });
-});
-
 
 // ===== INICIALIZACIÓN =====
 

@@ -3,52 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EUR/USD Professional Trading Platform</title>
-    
-    <!-- Meta tags para SEO y redes sociales -->
-    <meta name="description" content="Professional EUR/USD trading platform with real-time data, multi-timeframe analysis, and AI-powered insights">
-    <meta name="keywords" content="EUR/USD, forex trading, real-time data, technical analysis, trading platform">
-    <meta name="author" content="Franklin Andres Rodriguez">
-    
-    <!-- Open Graph para redes sociales -->
-    <meta property="og:title" content="EUR/USD Professional Trading Platform">
-    <meta property="og:description" content="Advanced trading platform with real-time data and AI analysis">
-    <meta property="og:image" content="https://franklin-andres-rodriguez.github.io/eur-usd-trading-platform/assets/preview.png">
-    <meta property="og:url" content="https://franklin-andres-rodriguez.github.io/eur-usd-trading-platform">
-    
-    <!-- External libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    
-    <!-- Custom styles -->
-    <link rel="stylesheet" href="src/css/main.css">
-    <link rel="stylesheet" href="src/css/responsive.css">
-    
+    <meta name="description" content="EUR/USD Trading Platform - Real-time analysis and trading tools">
+    <title>EUR/USD Trading Platform</title>
+
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
     <!-- Favicon -->
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="src/css/main.css" as="style">
-    <link rel="preload" href="src/js/main.js" as="script">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+
+    <!-- CSS will be injected by webpack -->
 </head>
 <body>
-    <!-- Beautiful Top Navigation -->
-    <div class="top-nav">
-        <div class="logo-section">
-            <div class="logo">💱 EUR/USD Pro</div>
-            <div class="live-price-display">
-                <div class="price-main" id="livePrice">1.1659</div>
-                <div class="price-change positive" id="priceChange">+0.0012 (+0.10%)</div>
-            </div>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">EUR/USD Trading Platform</h1>
+            <nav class="nav">
+                <a href="#live" class="nav-link active">Live</a>
+                <a href="#analysis" class="nav-link">Analysis</a>
+                <a href="#history" class="nav-link">History</a>
+                <a href="#settings" class="nav-link">Settings</a>
+            </nav>
         </div>
 
-        <!-- Adding toggle button in navigation -->
-         <label class="switch">
-            <input type="checkbox" id="theme-toggle">
-            <span class="slider">
-                <span class="icon">☀️</span>
-            </span>
-         </label>
-        
         <div class="api-status">
             <div class="status-dot" id="apiStatusDot"></div>
             <span id="apiStatusText">Live Data Active • Alpha Vantage</span>
@@ -60,7 +40,7 @@
             <!-- Left Panel: Multi-Timeframe Analysis -->
             <div class="panel">
                 <h2 class="panel-title">⏰ Multi-Timeframe Analysis</h2>
-                
+
                 <!-- Confluence Score -->
                 <div class="confluence-section">
                     <div class="confluence-title">🎯 Trend Confluence Score</div>
@@ -68,225 +48,112 @@
                     <div class="confluence-details" id="confluenceDetails">
                         3 of 4 timeframes bullish • Strong setup
                     </div>
-                </div>
-                
-                <!-- Timeframes Grid -->
-                <div class="timeframe-grid">
-                    <div class="timeframe-card bullish" id="tf-1h">
-                        <div class="tf-header">
-                            <div class="tf-name">1 Hour</div>
-                            <div class="trend-badge trend-bullish">Bullish</div>
-                        </div>
-                        <div class="tf-metrics">
-                            <span>RSI: <strong id="rsi-1h">65.4</strong></span>
-                            <span>MACD: <strong id="macd-1h">+0.0024</strong></span>
-                        </div>
-                    </div>
-                    
-                    <div class="timeframe-card bullish" id="tf-4h">
-                        <div class="tf-header">
-                            <div class="tf-name">4 Hours</div>
-                            <div class="trend-badge trend-bullish">Bullish</div>
-                        </div>
-                        <div class="tf-metrics">
-                            <span>RSI: <strong id="rsi-4h">58.2</strong></span>
-                            <span>MACD: <strong id="macd-4h">+0.0018</strong></span>
-                        </div>
-                    </div>
-                    
-                    <div class="timeframe-card neutral" id="tf-1d">
-                        <div class="tf-header">
-                            <div class="tf-name">Daily</div>
-                            <div class="trend-badge trend-neutral">Neutral</div>
-                        </div>
-                        <div class="tf-metrics">
-                            <span>RSI: <strong id="rsi-1d">48.7</strong></span>
-                            <span>MACD: <strong id="macd-1d">-0.0005</strong></span>
-                        </div>
-                    </div>
-                    
-                    <div class="timeframe-card bearish" id="tf-1w">
-                        <div class="tf-header">
-                            <div class="tf-name">Weekly</div>
-                            <div class="trend-badge trend-bearish">Bearish</div>
-                        </div>
-                        <div class="tf-metrics">
-                            <span>RSI: <strong id="rsi-1w">35.1</strong></span>
-                            <span>MACD: <strong id="macd-1w">-0.0089</strong></span>
-                        </div>
+                    <div class="price-meta">
+                        <span id="lastUpdate">Last Update: --</span>
+                        <span id="spread">Spread: --</span>
                     </div>
                 </div>
-                
-                <!-- Market Insight -->
-                <div class="market-insight">
-                    <div class="insight-title">🧠 Smart Analysis</div>
-                    <div class="insight-content" id="smartAnalysis">
-                        H1 and H4 showing strong bullish momentum with RSI in healthy range. Consider long positions with stops below 1.1620. Target resistance at 1.1750.
-                    </div>
-                </div>
-                
-                <button class="btn btn-success" onclick="refreshAnalysis()">🔄 Refresh Analysis</button>
-            </div>
-            
-            <!-- Center Panel: Chart -->
-            <div class="panel chart-panel">
-                <h2 class="panel-title">📈 Live EUR/USD Chart</h2>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <div style="display: flex; gap: 15px;">
-                        <button class="btn" onclick="changeTimeframe('1H')" id="btn-1h">1H</button>
-                        <button class="btn" onclick="changeTimeframe('4H')" id="btn-4h">4H</button>
-                        <button class="btn" onclick="changeTimeframe('1D')" id="btn-1d">1D</button>
-                    </div>
-                    <div style="font-size: 0.9em; color: #6b7280;">
-                        <strong>Source:</strong> <span id="dataSource">Alpha Vantage</span> • 
-                        <strong>Updated:</strong> <span id="lastUpdate">30s ago</span>
-                    </div>
-                </div>
-                
+            </section>
+
+            <!-- Chart Section -->
+            <section id="chart" class="section">
                 <div class="chart-container">
-                    <canvas id="mainChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Right Panel: Economic Calendar & Alerts -->
-            <div class="panel">
-                <h2 class="panel-title">📅 Economic Calendar</h2>
-                
-                <!-- Next Major Event -->
-                <div class="news-header">
-                    <div class="news-title">🚨 Next Major Event</div>
-                    <div class="countdown-timer" id="nextEventTimer">ECB Decision: 02:45:30</div>
-                </div>
-                
-                <!-- Economic Events -->
-                <div class="economic-calendar">
-                    <div class="event-item high">
-                        <div class="event-info">
-                            <div class="event-name">🏛️ ECB Interest Rate Decision</div>
-                            <div class="event-time">Today 14:00 GMT</div>
+                    <div class="chart-header">
+                        <h3>Price Chart</h3>
+                        <div class="chart-controls">
+                            <button class="btn" data-period="1H">1H</button>
+                            <button class="btn" data-period="4H">4H</button>
+                            <button class="btn active" data-period="1D">1D</button>
+                            <button class="btn" data-period="1W">1W</button>
                         </div>
-                        <div class="event-impact impact-high">High</div>
                     </div>
-                    
-                    <div class="event-item high">
-                        <div class="event-info">
-                            <div class="event-name">🇺🇸 Non-Farm Payrolls</div>
-                            <div class="event-time">Friday 13:30 GMT</div>
-                        </div>
-                        <div class="event-impact impact-high">High</div>
-                    </div>
-                    
-                    <div class="event-item medium">
-                        <div class="event-info">
-                            <div class="event-name">🇪🇺 Consumer Price Index</div>
-                            <div class="event-time">Tomorrow 10:00 GMT</div>
-                        </div>
-                        <div class="event-impact impact-medium">Medium</div>
-                    </div>
-                    
-                    <div class="event-item medium">
-                        <div class="event-info">
-                            <div class="event-name">🇺🇸 Retail Sales</div>
-                            <div class="event-time">Thursday 13:30 GMT</div>
-                        </div>
-                        <div class="event-impact impact-medium">Medium</div>
-                    </div>
-                    
-                    <div class="event-item low">
-                        <div class="event-info">
-                            <div class="event-name">🇩🇪 German IFO Business Climate</div>
-                            <div class="event-time">Friday 09:00 GMT</div>
-                        </div>
-                        <div class="event-impact impact-low">Low</div>
+                    <div id="priceChart" class="chart">
+                        <!-- Chart will be rendered here -->
+                        <div class="chart-placeholder">Chart loading...</div>
                     </div>
                 </div>
-                
-                <!-- Live Alerts Section -->
-                <div class="alerts-section">
-                    <h3 style="color: #4b5563; margin-bottom: 15px; font-size: 1.1em;">🚨 Live Alerts</h3>
-                    
-                    <div class="alert-item critical">
-                        <div class="alert-header">
-                            <div class="alert-title">RSI Oversold H1</div>
-                            <div class="alert-time">2 min ago</div>
-                        </div>
-                        <div class="alert-message">
-                            RSI dropped to 28.5 on 1H timeframe - potential reversal opportunity
-                        </div>
-                    </div>
-                    
-                    <div class="alert-item warning">
-                        <div class="alert-header">
-                            <div class="alert-title">Support Level Test</div>
-                            <div class="alert-time">5 min ago</div>
-                        </div>
-                        <div class="alert-message">
-                            Price testing key support at 1.1650 - watch for break or bounce
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis" class="section">
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h3>Technical Indicators</h3>
+                        <div id="technicalIndicators">
+                            <div class="indicator">
+                                <span>RSI:</span>
+                                <span id="rsi">--</span>
+                            </div>
+                            <div class="indicator">
+                                <span>MACD:</span>
+                                <span id="macd">--</span>
+                            </div>
+                            <div class="indicator">
+                                <span>Moving Average:</span>
+                                <span id="movingAverage">--</span>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="alert-item">
-                        <div class="alert-header">
-                            <div class="alert-title">Volume Spike Detected</div>
-                            <div class="alert-time">8 min ago</div>
-                        </div>
-                        <div class="alert-message">
-                            Unusual volume activity - potential breakout incoming
+
+                    <div class="analysis-card">
+                        <h3>Market Sentiment</h3>
+                        <div id="marketSentiment">
+                            <div class="sentiment-indicator">
+                                <span>Current Trend:</span>
+                                <span id="trend">Analyzing...</span>
+                            </div>
+                            <div class="sentiment-indicator">
+                                <span>Volatility:</span>
+                                <span id="volatility">--</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <button class="btn btn-warning" onclick="configureAlerts()">⚙️ Configure Alerts</button>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section hidden">
+                <div class="settings-container">
+                    <h3>Platform Settings</h3>
+                    <div class="settings-form">
+                        <div class="form-group">
+                            <label for="apiKey">Alpha Vantage API Key:</label>
+                            <input type="password" id="apiKey" placeholder="Enter your API key">
+                            <small>Get your free API key at alphavantage.co</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="refreshInterval">Refresh Interval (seconds):</label>
+                            <select id="refreshInterval">
+                                <option value="30">30 seconds</option>
+                                <option value="60" selected>1 minute</option>
+                                <option value="300">5 minutes</option>
+                            </select>
+                        </div>
+                        <button id="saveSettings" class="btn btn-primary">Save Settings</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 EUR/USD Trading Platform. For educational purposes only.</p>
+            <div class="footer-links">
+                <a href="#disclaimer">Disclaimer</a>
+                <a href="#privacy">Privacy</a>
+                <a href="#contact">Contact</a>
             </div>
         </div>
-        
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value positive" id="todayRange">89 pips</div>
-                <div class="stat-label">Today's Range</div>
-                <div class="stat-change" style="color: #16a34a;">+12 pips vs avg</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value positive" id="sessionHigh">1.1695</div>
-                <div class="stat-label">Session High</div>
-                <div class="stat-change" style="color: #16a34a;">+0.0045</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value negative" id="sessionLow">1.1606</div>
-                <div class="stat-label">Session Low</div>
-                <div class="stat-change" style="color: #dc2626;">-0.0053</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value neutral" id="volatility">High</div>
-                <div class="stat-label">Volatility (ATR)</div>
-                <div class="stat-change" style="color: #3b82f6;">95 pips</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value positive" id="signalsAccuracy">78%</div>
-                <div class="stat-label">Signals Accuracy</div>
-                <div class="stat-change" style="color: #16a34a;">+5% this week</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value negative" id="maxDrawdown">-2.3%</div>
-                <div class="stat-label">Max Drawdown</div>
-                <div class="stat-change" style="color: #dc2626;">Within limits</div>
-            </div>
-        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Initializing platform...</p>
     </div>
 
-    <!-- Scripts -->
-    <script src="src/config/api.js"></script>
-    <script src="src/js/utils.js"></script>
-    <script src="src/js/api-manager.js"></script>
-    <script src="src/js/chart-manager.js"></script>
-    <script src="src/js/ui-manager.js"></script>
-    <script src="src/js/main.js"></script>
+    <!-- JavaScript will be injected by webpack -->
 </body>
 </html>
