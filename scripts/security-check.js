@@ -115,7 +115,9 @@ class SecurityValidator {
       // Common secret patterns (more specific to avoid false positives)
       { pattern: /password\s*[:=]\s*['"][^'"]{8,}['"]/gi, name: 'Hardcoded Password' },
       { pattern: /secret\s*[:=]\s*['"][^'"]{8,}['"]/gi, name: 'Hardcoded Secret' },
-      { pattern: /token\s*[:=]\s*['"][^'"]{20,}['"]/gi, name: 'Hardcoded Token' },
+      { pattern: /password\s*[:=]\s*['"][^'"]*['"]/gi, name: 'Hardcoded Password' },
+      { pattern: /secret\s*[:=]\s*['"][^'"]*['"]/gi, name: 'Hardcoded Secret' },
+      { pattern: /token\s*[:=]\s*['"][^'"]*['"]/gi, name: 'Hardcoded Token' },
 
       // Database connection strings
       { pattern: /mongodb:\/\/[^:]+:[^@]+@/gi, name: 'MongoDB Connection String with Credentials' },
