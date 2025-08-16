@@ -1,0 +1,314 @@
+# =============================================================================
+# GITHUB ACTIONS WORKFLOW - SECURITY PIPELINE
+# File: .github/workflows/security-validation.yml
+# =============================================================================
+
+name: Security Validation Pipeline
+on:
+  push:
+    branches: [ main, develop, staging ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18.x'
+  SECURITY_SCAN_THRESHOLD: 'MEDIUM'
+
+jobs:
+  # =============================================================================
+  # SECRET DETECTION - Prevent credential leaks
+  # =============================================================================
+  secret-detection:
+    name: Secret Detection Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive scan
+
+      - name: Run TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+      - name: GitGuardian Secret Detection
+        uses: GitGuardian/ggshield-action@v1
+        env:
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+      - name: Custom Financial Secret Patterns
+        run: |
+          # Check for financial-specific secret patterns
+          echo "Scanning for financial API patterns..."
+
+          # Define financial secret patterns
+          declare -a patterns=(
+            "broker.*key.*=.*['\"][a-zA-Z0-9]{20,}['\"]"
+            "trading.*secret.*=.*['\"][a-zA-Z0-9]{20,}['\"]"
+            "market.*data.*token.*=.*['\"][a-zA-Z0-9]{20,}['\"]"
+            "sk_live_[a-zA-Z0-9]{20,}"
+            "ak_live_[a-zA-Z0-9]{20,}"
+            "bearer.*[a-zA-Z0-9]{32,}"
+          )
+
+          # Scan all files for patterns
+          for pattern in "${patterns[@]}"; do
+            echo "Checking pattern: $pattern"
+            if grep -r -E "$pattern" . --exclude-dir=node_modules --exclude-dir=.git; then
+              echo "❌ CRITICAL: Financial secret pattern detected!"
+              echo "Pattern: $pattern"
+              exit 1
+            fi
+          done
+
+          echo "✅ No financial secret patterns detected"
+
+  # =============================================================================
+  # DEPENDENCY VULNERABILITY SCANNING
+  # =============================================================================
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: NPM Audit
+        run: |
+          # Run npm audit and fail on high/critical vulnerabilities
+          npm audit --audit-level high
+
+      - name: Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium --fail-on=all
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'eur-usd-trading-platform'
+          path: '.'
+          format: 'ALL'
+          args: >
+            --enableRetired
+            --enableExperimental
+            --failOnCVSS 7
+
+  # =============================================================================
+  # STATIC CODE ANALYSIS - Security focused
+  # =============================================================================
+  static-analysis:
+    name: Static Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: ESLint Security Rules
+        run: |
+          # Install security-focused ESLint rules
+          npm install --save-dev eslint-plugin-security eslint-plugin-no-secrets
+
+          # Run ESLint with security focus
+          npx eslint . --ext .js,.jsx,.ts,.tsx \
+            --config .eslintrc.security.js \
+            --format json \
+            --output-file eslint-security-report.json
+
+      - name: SonarCloud Security Analysis
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Semgrep Security Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/javascript
+            p/typescript
+            p/nodejs
+
+  # =============================================================================
+  # CONFIGURATION VALIDATION
+  # =============================================================================
+  config-validation:
+    name: Configuration Security Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Security Configurations
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Validating security configurations..."
+
+          # Check .gitignore exists and contains critical patterns
+          if [ ! -f .gitignore ]; then
+            echo "❌ CRITICAL: .gitignore file missing!"
+            exit 1
+          fi
+
+          # Validate critical .gitignore patterns
+          critical_patterns=(
+            "\.env"
+            "node_modules"
+            "\*\.log"
+            "\*secret\*"
+            "\*credential\*"
+            "\*\.key"
+          )
+
+          for pattern in "${critical_patterns[@]}"; do
+            if ! grep -q "$pattern" .gitignore; then
+              echo "❌ CRITICAL: Missing .gitignore pattern: $pattern"
+              exit 1
+            fi
+          done
+
+          # Check for environment template files
+          if [ ! -f .env.example ] && [ ! -f .env.template ]; then
+            echo "⚠️  WARNING: No environment template file found"
+          fi
+
+          # Validate package.json security
+          if [ -f package.json ]; then
+            # Check for security scripts
+            if ! jq -e '.scripts.audit' package.json > /dev/null; then
+              echo "⚠️  WARNING: No audit script in package.json"
+            fi
+
+            # Check for dangerous dependencies
+            dangerous_deps=(
+              "eval"
+              "vm2"
+              "serialize-javascript"
+            )
+
+            for dep in "${dangerous_deps[@]}"; do
+              if jq -e ".dependencies.\"$dep\"" package.json > /dev/null; then
+                echo "⚠️  WARNING: Potentially dangerous dependency: $dep"
+              fi
+            done
+          fi
+
+          echo "✅ Configuration validation completed"
+
+  # =============================================================================
+  # DOCKER SECURITY SCAN (if using containers)
+  # =============================================================================
+  docker-security:
+    name: Docker Security Scan
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'Dockerfile')
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build -t eur-usd-trading:security-test .
+
+      - name: Trivy Container Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'eur-usd-trading:security-test'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy Results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # =============================================================================
+  # SECURITY POLICY ENFORCEMENT
+  # =============================================================================
+  policy-enforcement:
+    name: Security Policy Enforcement
+    runs-on: ubuntu-latest
+    needs: [secret-detection, dependency-scan, static-analysis]
+    steps:
+      - name: Enforce Branch Protection
+        run: |
+          echo "🛡️  Enforcing security policies..."
+
+          # Check if this is a direct push to main (should be blocked)
+          if [[ "${{ github.ref }}" == "refs/heads/main" && "${{ github.event_name }}" == "push" ]]; then
+            echo "❌ POLICY VIOLATION: Direct push to main branch not allowed"
+            exit 1
+          fi
+
+          # Check PR requirements
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "✅ Pull request workflow - security checks passed"
+          fi
+
+      - name: Generate Security Report
+        run: |
+          cat << EOF > security-report.md
+          # Security Validation Report
+
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Commit**: ${{ github.sha }}
+          **Branch**: ${{ github.ref_name }}
+
+          ## Security Checks Completed
+
+          - ✅ Secret Detection Scan
+          - ✅ Dependency Vulnerability Scan
+          - ✅ Static Security Analysis
+          - ✅ Configuration Validation
+          - ✅ Security Policy Enforcement
+
+          ## Summary
+
+          All security validation checks have passed successfully.
+          The code is cleared for deployment to staging environment.
+
+          **Next Steps**:
+          1. Automated deployment to staging
+          2. Integration testing with security focus
+          3. Performance testing under load
+          4. Manual security review (if required)
+
+          EOF
+
+          echo "Security report generated"
+

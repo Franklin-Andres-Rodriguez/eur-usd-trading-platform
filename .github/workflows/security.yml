@@ -1,0 +1,31 @@
+name: Security Check
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Security audit
+        run: npm audit --audit-level moderate
+
+      - name: Check for secrets
+        run: |
+          echo "Checking for hardcoded secrets..."
+          if grep -r "sk_live_\|ak_live_\|bearer.*[a-zA-Z0-9]\{32,\}" . --exclude-dir=node_modules --exclude-dir=.git; then
+            echo "❌ Secrets found!"
+            exit 1
+          fi
+          echo "✅ No secrets detected"
