@@ -1,0 +1,50 @@
+repos:
+  # Secret detection with proper exclusions
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: |
+          (?x)^(
+            package-lock\.json|
+            \.env\.example|
+            \.env\.template|
+            docs/.*\.md|
+            README\.md
+          )$
+
+  # General security checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-json
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  # Custom environment file validation (allow templates, block actual env files)
+  - repo: local
+    hooks:
+      - id: block-env-files
+        name: Block .env files (except templates)
+        entry: bash -c 'if ls .env .env.local .env.production .env.staging .env.development 2>/dev/null | grep -v "\.example$" | grep -v "\.template$"; then echo "❌ BLOCKED: Real .env files detected! Use .env.example instead."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        
+      - id: financial-secrets-check
+        name: Financial Secrets Detection
+        entry: bash -c 'if grep -r -E "(sk_live_|ak_live_|bearer.*[a-zA-Z0-9]{32,})" . --exclude-dir=node_modules --exclude-dir=.git --exclude="*.example" --exclude="*.template" --exclude="*.md"; then echo "❌ BLOCKED: Financial secrets detected!"; exit 1; fi'
+        language: system
+        pass_filenames: false
+
+      - id: npm-audit-check
+        name: NPM Security Audit
+        entry: npm audit --audit-level moderate
+        language: system
+        pass_filenames: false
+        files: package\.json$
