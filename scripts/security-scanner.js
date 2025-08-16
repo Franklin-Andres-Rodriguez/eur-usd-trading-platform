@@ -40,7 +40,12 @@ class EnterpriseSecurityScanner {
       { name: 'Bearer Token', regex: /bearer\s+[a-zA-Z0-9]{32,}/gi },
       { name: 'JWT Secret', regex: /jwt[_-]?secret['":\s]*[a-zA-Z0-9]{16,}/gi },
       { name: 'Database URL', regex: /mongodb:\/\/[^'\s"]+/gi },
-      { name: 'Private Key', regex: /-----BEGIN[A-Z\s]+PRIVATE KEY-----/gi }
+      { name: 'Live Broker API Key', regex: /sk_live_[a-zA-Z0-9]{20,}/ },
+      { name: 'Live API Key', regex: /ak_live_[a-zA-Z0-9]{20,}/ },
+      { name: 'Bearer Token', regex: /bearer\s+[a-zA-Z0-9]{32,}/i },
+      { name: 'JWT Secret', regex: /jwt[_-]?secret['":\s]*[a-zA-Z0-9]{16,}/i },
+      { name: 'Database URL', regex: /mongodb:\/\/[^'\s"]+/i },
+      { name: 'Private Key', regex: /-----BEGIN[A-Z\s]+PRIVATE KEY-----/i }
     ];
 
     this.scanDirectory('.', patterns);
