@@ -136,7 +136,7 @@ const validateConfig = () => {
   }
 
   // Validate JWT secret strength
-  if (API_CONFIG.security.jwt.secret.length < 32) {
+  if (!API_CONFIG.security.jwt.secret || API_CONFIG.security.jwt.secret.length < 32) {
     errors.push('JWT_SECRET must be at least 32 characters long');
   }
 
