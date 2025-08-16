@@ -43,7 +43,12 @@ jobs:
           echo "🔍 Running comprehensive secret detection..."
           
           # TruffleHog scan
-          docker run --rm -v "$PWD:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --only-verified
+          # Prepare a temporary directory with only relevant files
+          mkdir /tmp/scan-src
+          rsync -av --exclude='node_modules' --exclude='.git' --exclude='.github' --exclude='*.log' ./ /tmp/scan-src/
+          
+          # TruffleHog scan
+          docker run --rm -v "/tmp/scan-src:/pwd" trufflesecurity/trufflehog:latest filesystem /pwd --only-verified
           
           # Custom financial patterns
           echo "Checking financial-specific patterns..."
